@@ -156,9 +156,3 @@ Also concrete, not hypothetical:
 - **No CI.** `lint`/`build`/`test` are run manually per `ai-interaction.md`'s
   workflow rather than gated automatically on push.
 
-## Is this worth having as a public repo?
-
-Honestly: the value here is process and documentation discipline, not shipped
-code — a legitimate but unusual portfolio signal. It reads better framed as a
-personal tooling repo ("here's how I work with Claude Code") than as a flagship
-project. Worth having, worth being upfront about what it is.
