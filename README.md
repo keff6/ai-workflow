@@ -31,8 +31,19 @@ from `CLAUDE.md`. Only `CLAUDE.md`, `coding-standards.md`, and `ROADMAP.md` (or
 
 ## Quick start
 
-1. Copy `.claude/`, `context/`, `CLAUDE.md`, `AGENTS.md`, and `.mcp.json` into your
-   new project's root.
+1. From your new project's root, run:
+
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/keff6/ai-workflow/master/install.py | python3 -
+   ```
+
+   It copies `.claude/`, `context/`, `CLAUDE.md`, `AGENTS.md`, and (optionally)
+   `.mcp.json` into the current folder (or pass a path: `python3 - ~/projects/new-app`).
+   It asks whether to use lite mode and whether to include the Playwright MCP server; skip
+   the questions with `--lite`/`--no-lite` and `--playwright`/`--no-playwright`. Existing
+   files are skipped unless you add `--force`; `--dry-run` previews, `--ref <tag>` pins a
+   version.
+   Or copy those files by hand.
    It can be an empty folder — kickoff will scaffold the project.
 2. Run `/feature kickoff <assignment text or file>`. Answer its questions, approve the
    stack and slices; it scaffolds with the official generator, makes sure
