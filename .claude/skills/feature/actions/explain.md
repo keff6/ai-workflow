@@ -1,12 +1,15 @@
 # Explain Action
 
-1. Read current-feature.md to understand what was implemented
-2. Run `git diff main --name-only` to get list of files changed
+1. Read current-feature.md to understand what was implemented.
+2. Get the list of changed files:
+   - Full mode: `git diff <default> --name-only` (default branch: see SKILL.md).
+   - Lite mode (no feature branch): uncommitted changes (`git diff HEAD --name-only`
+     plus untracked files), or the last slice commit if everything is committed.
 3. For each file created or modified:
    - Show the file path
    - Give a 1-2 sentence explanation of what it does / what changed
    - Highlight any key functions, components, or patterns used
-4. End with a brief summary of how the pieces fit together
+4. End with a brief summary of how the pieces fit together.
 
 ## Output Format
 

@@ -1,8 +1,9 @@
 # Spec: <Feature Name>
 
-> Copy this file to `specs/<phase>-<slug>.md` and fill it in before starting work.
-> Claude Code should read this spec fully before writing any code, and should stop
-> and ask if anything below is ambiguous rather than guessing.
+> Copy this file to `context/features/<phase>-<slug>.md` (or run `/feature generate`) and
+> fill it in before starting work. Delete sections that don't apply (e.g. no UI section
+> for a backend-only feature). Claude Code should read this spec fully before writing any
+> code, and should stop and ask if anything below is ambiguous rather than guessing.
 
 ## 1. Goal
 
@@ -16,18 +17,18 @@ One or two sentences: what does this feature let the user do, and why does it ma
 **Out of scope (explicitly not doing this now):**
 -
 
-## 3. Routes / Pages
+## 3. Routes / Pages / Endpoints
 
-| Route | Type | Auth required? | Description |
+| Route | Type (page, API, action...) | Auth required? | Description |
 |---|---|---|---|
-| `/example` | Server Component | No | ... |
+| `/example` | page | No | ... |
 
 ## 4. Data requirements
 
-Which Prisma models/fields does this touch? Any new fields, relations, or migrations needed?
+Which models/tables/fields does this touch? Any new fields, relations, or migrations needed?
 
-```prisma
-// paste or reference relevant model(s) here
+```
+// paste or reference the relevant schema here
 ```
 
 Queries needed (rough shape, not final code):

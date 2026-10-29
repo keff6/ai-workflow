@@ -8,6 +8,5 @@ Not Started
 
 ## Notes
 
-## History
-
-<!-- Keep this updated. Earliest to Latest -->
+<!-- Completed features are logged in context/HISTORY.md, not here, so this file stays
+     small (it is loaded on every session). -->

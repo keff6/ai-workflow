@@ -19,40 +19,63 @@ project. Copy this folder in, fill in the placeholders, go.
   `context/coding-standards.md`) — the rules Claude follows on every session:
   communication style, branching/commit discipline, code conventions.
 - **A spec workflow** (`context/ROADMAP.md` → `context/SPEC_TEMPLATE.md` →
-  `context/feature/*.md`) — write specs before code, so Claude implements against a
+  `context/features/*.md`) — write specs before code, so Claude implements against a
   written spec instead of a chat message.
+- **A kickoff step** (`/feature kickoff`) — turns an assignment into clarifying
+  questions, a stack choice, a scaffolded project with working checks, and filled-in
+  context files. `/feature kickoff lite` does the same for time-boxed work (interviews).
 
-None of this is framework-specific. The agents and skill are generic; only
-`CLAUDE.md`, `coding-standards.md`, and `ROADMAP.md` need real project content.
+The skill and agents are written to be stack-agnostic; they read the stack and commands
+from `CLAUDE.md`. Only `CLAUDE.md`, `coding-standards.md`, and `ROADMAP.md` (or
+`SPEC.md` in lite mode) need real project content, and kickoff drafts those for you.
 
 ## Quick start
 
 1. Copy `.claude/`, `context/`, `CLAUDE.md`, `AGENTS.md`, and `.mcp.json` into your
    new project's root.
-2. Fill in `CLAUDE.md` — project name, commands, real stack, DB info if any.
-3. Fill in `context/project-overview.md` (a PRD: goals, non-goals, scope) and
-   `context/coding-standards.md` (real conventions, not the bracketed prompts).
-4. Write `context/ROADMAP.md` as a phased task breakdown for the actual project.
-5. Run `/feature generate <phase>` to draft specs for a phase into `context/feature/`,
+   It can be an empty folder — kickoff will scaffold the project.
+2. Run `/feature kickoff <assignment text or file>`. Answer its questions, approve the
+   stack and slices; it scaffolds with the official generator, makes sure
+   dev/build/lint/typecheck/test work, and fills in `CLAUDE.md`,
+   `context/project-overview.md`, `context/coding-standards.md` and `context/ROADMAP.md`.
+3. Run `/feature generate <phase>` to draft specs for a phase into `context/features/`,
    or write one by hand from `SPEC_TEMPLATE.md`.
-6. Run `/feature load <spec-name>` to load a spec into `context/current-feature.md`,
-   then `/feature start` to begin.
+4. Run `/feature load <spec-name>` to load a spec into `context/current-feature.md`,
+   then `/feature start` to get a plan and begin.
+
+## Interview / time-boxed mode
+
+For a live coding test or a short take-home, the full PRD → ROADMAP → specs → branch per
+feature pipeline costs more time than it saves. Use lite mode instead:
+
+1. `/feature kickoff lite <assignment>` — restates the problem, asks at most 5
+   questions (with default assumptions), proposes 3–6 vertical slices sized to the time
+   box, scaffolds, verifies the checks, and writes a single `context/SPEC.md`.
+2. Per slice: `/feature load slice 1` → `/feature start` → `/feature review` →
+   `/feature complete`. No branches; one commit per slice on the current branch.
+3. At the end: `/feature explain` for a walkthrough of the code, and the
+   `architecture-reporter` agent for interview talking points and likely questions. The
+   SPEC.md Decisions log becomes your README's "Decisions and trade-offs" section.
+
+Practice it once before the real interview, and be ready to do it by hand if you can't
+bring this kit.
 
 ## How the workflow fits together
 
 ```mermaid
 flowchart TD
-    RM["ROADMAP.md<br/>(phased backlog)"] -->|"/feature generate"| SPEC["context/feature/*.md<br/>(spec files)"]
+    RM["ROADMAP.md<br/>(phased backlog)"] -->|"/feature generate"| SPEC["context/features/*.md<br/>(spec files)"]
     SPEC -->|"/feature load"| CF["current-feature.md<br/>Status: Not Started"]
-    CF -->|"/feature start"| BR["branch created<br/>Status: In Progress"]
+    KO["/feature kickoff"] -->|"writes"| RM
+    CF -->|"/feature start"| BR["plan approved, branch created<br/>Status: In Progress"]
     BR --> IMPL["Implement goals"]
     IMPL -->|"/feature test"| TEST["Write/verify unit tests"]
     TEST -->|"/feature review"| REV{"Goals met?<br/>Quality OK?<br/>Scope creep?"}
     REV -- "needs changes" --> IMPL
     REV -- "ready" --> EXP["/feature explain"]
     EXP --> COMP["/feature complete"]
-    COMP --> MERGE["commit, merge to main,<br/>push, delete branch"]
-    MERGE --> HIST["append summary to<br/>History in current-feature.md"]
+    COMP --> MERGE["run checks, commit,<br/>merge to default branch, delete branch"]
+    MERGE --> HIST["append summary to<br/>context/HISTORY.md"]
     HIST -.resets to blank.-> CF
 ```
 
@@ -95,24 +118,27 @@ flowchart LR
 
 | Action | What it does |
 |---|---|
-| `load` | Loads a spec (or inline description) into `current-feature.md`, sets Status to Not Started |
-| `start` | Creates/checks out the feature branch, sets Status to In Progress, lists goals |
-| `test` | Writes unit tests for new server actions/utilities that don't have them yet |
-| `review` | Checks goals met, code quality, and scope creep; gives a ready/needs-changes verdict |
-| `explain` | Summarizes what changed and why, file by file, for the current diff against main |
-| `complete` | Commits, merges to main, resets `current-feature.md`, appends to History, pushes once |
-| `generate` | Drafts spec files from a `ROADMAP.md` phase, using `SPEC_TEMPLATE.md` |
+| `kickoff` | Assignment → questions → stack and slices → scaffold → working checks → context files. `kickoff lite` for time-boxed work |
+| `generate` | Drafts spec files from a `ROADMAP.md` phase, using `SPEC_TEMPLATE.md`, and keeps the roadmap in sync |
+| `load` | Loads a spec, a lite slice, or an inline description into `current-feature.md`; flags spec contradictions |
+| `start` | Proposes a plan and waits; then branches (full mode) and implements, checking after each goal |
+| `test` | Writes unit tests for the feature's logic with the project's test runner |
+| `review` | Re-runs checks; checks goals met, code quality, and scope creep; gives a ready/needs-changes verdict |
+| `explain` | Summarizes what changed and why, file by file |
+| `complete` | Runs checks, stages by name, asks before committing; merges and logs to `HISTORY.md` (full) or ticks the slice (lite) |
 
 ### Context files (`context/`)
 
 | File | Role |
 |---|---|
-| `current-feature.md` | The single working file for whatever feature is active right now, plus an append-only History log of everything completed |
+| `current-feature.md` | The single working file for whatever feature is active right now. Kept small, since it loads every session |
+| `HISTORY.md` | Append-only log of completed features and why. Not auto-loaded |
+| `SPEC.md` | Lite mode only, created by `kickoff lite`: goal, assumptions, acceptance criteria, slices, decisions log |
 | `ai-interaction.md` | Communication style, the numbered feature workflow, branching/commit rules, "when stuck" guidance |
 | `coding-standards.md` | Real per-project conventions (naming, error handling, file layout, etc.) |
 | `project-overview.md` | A lightweight PRD — goals, non-goals, scope, success criteria |
 | `ROADMAP.md` | Phased backlog; each item becomes a spec file |
-| `SPEC_TEMPLATE.md` | The format every spec in `context/feature/` follows |
+| `SPEC_TEMPLATE.md` | The format every spec in `context/features/` follows |
 
 ## What worked well
 
@@ -126,8 +152,8 @@ Drawn from actually running this on GamesCollection, not general praise:
 - **Explicit confirm-before-commit.** `ai-interaction.md`'s "never auto-commit" rule
   meant nothing landed on `main` without a deliberate look first — cheap insurance
   against an agent's confident-but-wrong judgment call.
-- **The append-only History log is a real audit trail.** Every entry in
-  `current-feature.md`'s History records not just *what* changed but *why*
+- **The append-only History log is a real audit trail.** Every entry in the
+  History log (now `context/HISTORY.md`) records not just *what* changed but *why*
   (including explicitly-confirmed deviations from spec) — genuinely useful months
   later, unlike a commit log alone.
 - **Spec review before code.** Loading a spec and reading it against reality caught
@@ -148,11 +174,13 @@ Also concrete, not hypothetical:
   `code-scanner` before a commit or `ui-reviewer` after a UI change — it depends on
   remembering to invoke them.
 - **`ROADMAP.md` drifts.** Scope changes discovered mid-spec (e.g. a field getting
-  cut) need to be manually synced back into the roadmap, and that sync doesn't
-  always happen right away.
+  cut) need to be synced back into the roadmap. `/feature generate` now updates it
+  when writing specs changes scope, but changes found later, during implementation,
+  still need a manual sync.
 - **No `settings.json` permission tuning.** Every tool call in a fresh project hits
   default prompts — the `fewer-permission-prompts` Claude Code skill could close
   this gap but wasn't set up here.
-- **No CI.** `lint`/`build`/`test` are run manually per `ai-interaction.md`'s
-  workflow rather than gated automatically on push.
+- **No CI or hooks.** `/feature start`, `review` and `complete` now run the checks,
+  but nothing gates a push automatically. A Claude Code hook that runs typecheck/lint
+  after edits, plus a CI workflow, would close this.
 

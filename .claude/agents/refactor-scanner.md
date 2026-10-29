@@ -66,3 +66,17 @@ Duplication in 2 locations or simpler patterns that would benefit from extractio
 Minor patterns that could be extracted but are borderline — note the tradeoff.
 
 For each finding, provide:
+
+- **Pattern:** one line naming the duplicated logic
+- **Locations:** every occurrence as `path/to/file.ts:line`, with a short snippet of one
+  of them
+- **Suggested utility:** name, location (e.g. `src/lib/format.ts`), and the full
+  implementation, typed
+- **Call-site changes:** how each location would look after the refactor
+- **Why it's worth it:** what gets simpler, safer or easier to change — or, for OPTIONAL
+  findings, the trade-off against leaving it as is
+
+End with a summary: number of findings per impact level, and the 1–3 extractions you
+would do first.
+
+Report only — do not edit files. The user decides which extractions to apply.

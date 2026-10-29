@@ -1,11 +1,12 @@
 # <Project Name> — Roadmap
 
-Spec-driven workflow: every task below gets its own file in `context/feature/`, written
+Spec-driven workflow: every task below gets its own file in `context/features/`, written
 *before* any code is touched. Claude Code implements against the spec, not against a
 chat message. Use `SPEC_TEMPLATE.md` to write each one, or run `/feature generate
 <phase>` to have Claude draft them from this roadmap.
 
-Naming convention: `context/feature/<phase>-<slug>.md`, e.g. `context/feature/01-navbar-layout.md`.
+Naming convention: `context/features/<phase>-<slug>.md`, e.g. `context/features/01-navbar-layout.md`.
+Load one with `/feature load 01-navbar-layout` (or just `navbar-layout`).
 
 ---
 

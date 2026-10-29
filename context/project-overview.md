@@ -70,4 +70,5 @@ See `ROADMAP.md` for the full phased task breakdown.
 - `CLAUDE.md` — repo conventions and stack
 - `ROADMAP.md` — phased task breakdown
 - `SPEC_TEMPLATE.md` — spec format for individual features
-- `context/feature/*.md` — per-feature implementation specs
+- `context/features/*.md` — per-feature implementation specs
+- `context/HISTORY.md` — completed features and why
